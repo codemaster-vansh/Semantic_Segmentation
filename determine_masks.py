@@ -7,12 +7,12 @@ mask_dir = r''  # PUT THE FILE DIRECTORY WHERE THE IMAGE MASKS ARE THERE
 color_to_class = {}
 color_to_class_json = {}
 next_class_id = 0
-num_masks = 11  # CHANGE WITH NUMBER OF CLASSES. 
+NUM_MASKS =   # CHANGE WITH NUMBER OF CLASSES. 
 
 mask_files = sorted(os.listdir(mask_dir))
 
 for i, filename in enumerate(mask_files):
-    if next_class_id == num_masks:
+    if next_class_id == NUM_MASKS:
         break
     if filename.lower().endswith((".png", ".jpg", ".jpeg")):
         path = os.path.join(mask_dir, filename)
