@@ -6,7 +6,6 @@ import torch.nn as nn
 from PIL import Image
 from torchvision import transforms
 from torch.utils.data import Dataset
-from determine_mask_mapping import NUM_MASKS
 
 if not os.path.exists(os.getcwd(),'color_mapping.json'):
     raise ImportError("Please store color mappings in json file in the CWD")
@@ -88,7 +87,7 @@ class EncoderBlock(nn.Module):
     def forward(self,x):
         features = self.conv_block(x)
         pooled = self.pool(features)
-        return pooled, features\
+        return pooled, features
         
 
 class DecoderBlock(nn.Module):
