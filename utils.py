@@ -4,10 +4,11 @@ import torch
 import numpy as np
 import torch.nn as nn
 from PIL import Image
+import matplotlib.pyplot as plt
 from torchvision import transforms
 from torch.utils.data import Dataset
 
-if not os.path.exists(os.getcwd(),'color_mapping.json'):
+if not os.path.exists(os.path.join(os.getcwd(),'color_mapping.json')):
     raise ImportError("Please store color mappings in json file in the CWD")
 else:
     with open(os.path.join(os.getcwd(),'color_mapping.json'),'r') as file:
@@ -15,9 +16,11 @@ else:
         mapping = dict(mapping)
 
     color_mapping = {}
+    count = 0
     for keys, values in mapping.items():
         color_mapping[tuple(values)] = int(keys)
-    
+        count += 1
+
 class PairedImageDataset(Dataset):
     def __init__(self,input_dir,output_dir,height,width,file_extension=".png"):
         self.input_dir = input_dir
@@ -25,6 +28,7 @@ class PairedImageDataset(Dataset):
         self.filenames = sorted(os.listdir(input_dir))
         self.file_extension = file_extension
         self.color_to_class = color_mapping
+        self.num_masks = count
 
         self.input_transform = transforms.Compose([
             transforms.Resize((height,width)),
@@ -162,3 +166,46 @@ class UNet(nn.Module):
         x = self.decoder3(x,skip_features[-3])
         x = self.decoder4(x,skip_features[-4])
         return self.shorten(x)
+    
+def class_indices_to_rgb(mask,color_map):
+    h,w = mask.shape[:2]
+    rgb_mask = np.zeros((h,w,3),dtype=np.uint8)
+    for color, class_idx in color_map.items():
+        rgb_mask[mask == class_idx] = color
+    return rgb_mask
+
+def save_preds(model, dataloader, device, output_dir, color_map):
+    model.eval()
+    with torch.no_grad():
+        for idx, (inputs,targets) in enumerate(dataloader):
+            inputs = inputs.to(device)
+            outputs = model(inputs)
+            preds = torch.argmax(outputs, dim=1)
+            for i in range(preds.size(0)):
+                pred_mask = preds[i].cpu().numpy()
+                rgb_pred_mask = class_indices_to_rgb(pred_mask,color_map)
+
+                target_mask = targets[i].cpu().numpy()
+                rgb_target_mask = class_indices_to_rgb(target_mask, color_map)
+
+                input_img = inputs[i].cpu().permute(1, 2, 0).numpy()
+                input_img = (input_img - input_img.min()) / (input_img.max() - input_img.min())
+                input_img = (input_img * 255).astype(np.uint8)
+
+                fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+                axs[0].imshow(input_img)
+                axs[0].set_title('Input Image')
+                axs[0].axis('off')
+
+                axs[1].imshow(rgb_target_mask)
+                axs[1].set_title('Ground Truth Mask')
+                axs[1].axis('off')
+
+                axs[2].imshow(rgb_pred_mask)
+                axs[2].set_title('Predicted Mask')
+                axs[2].axis('off')
+
+                plt.tight_layout()
+                save_path = os.path.join(output_dir, f'comparison_{idx * dataloader.batch_size + i}.png')
+                plt.savefig(save_path)
+                plt.close(fig)
