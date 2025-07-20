@@ -21,6 +21,6 @@ The image on the right shows what my implementation learned after **50** epochs 
 
 ---
 
-If you have any recommendations for this repo or any of my works in general you can reach out to me on my [Gmail](vanshwhig24@gmail.com)
+📧 If you have any recommendations for this repo or any of my works in general you can reach out to me on my [gmail](mailto:vanshwhig24@gmail.com)
 
 Here is the [MIT License](LICENSE)
