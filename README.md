@@ -6,9 +6,11 @@ Creating a Semantic Segmentation Model trained using a UNet Model with Skip Conn
 
 ### 1. What it contains
 
-**a.** <u>**utils.py**</u> - it contains the definition for all the classes and helper function (TBD)
+**a.** <u>**Model.ipynb**</u> - it contains the training loop and the 
 
-**b.** <u>**determinemasks.py**</u> - it contains functionality for determining the number of masks and the associated unique colors, if unknown. It helps preparing the dataset for the Multi-Class Segmentation
+**b.** <u>**utils.py**</u> - it contains the definition for all the classes and helper function (TBD)
+
+**c.** <u>**determinemasks.py**</u> - it contains functionality for determining the number of masks and the associated unique colors, if unknown. It helps preparing the dataset for the Multi-Class Segmentation
 
 ---
 ### 2. An Example
@@ -18,5 +20,7 @@ Creating a Semantic Segmentation Model trained using a UNet Model with Skip Conn
 The image on the right shows what my implementation learned after **50** epochs training with a **0.80-0.10-0.20** split of the dataset.
 
 ---
+
+If you have any recommendations for this repo or any of my works in general you can reach out to me on my [Gmail](vanshwhig24@gmail.com)
 
 Here is the [MIT License](LICENSE)
